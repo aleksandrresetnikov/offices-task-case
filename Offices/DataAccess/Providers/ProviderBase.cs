@@ -9,15 +9,15 @@ namespace Offices.DataAccess.Providers;
 /// </summary>
 public abstract class ProviderBase<TEntity> where TEntity : TypeBase
 {
-    protected readonly DbContextBase _contextBase;
+    protected readonly DellinDictionaryDbContext Context;
     
     /// <summary>
     /// Конструктор.
     /// </summary>
-    /// <param name="contextBase">Контекст данных.</param>
-    protected ProviderBase(DbContextBase contextBase)
+    /// <param name="context">Контекст данных.</param>
+    protected ProviderBase(DellinDictionaryDbContext context)
     {
-        _contextBase = contextBase;
+        Context = context;
     }
     
     /// <summary>
@@ -28,7 +28,7 @@ public abstract class ProviderBase<TEntity> where TEntity : TypeBase
     /// <exception cref="InvalidOperationException"></exception>
     protected DbSet<TEntity> GetDbSet()
     {
-        return _contextBase.Set<TEntity>() 
+        return Context.Set<TEntity>() 
                ?? throw new InvalidOperationException(
                    $"Не удалось получить DbSet для сущности '{typeof(TEntity).Name}'. " +
                    $"Проверьте, что тип зарегистрирован в вашем DbContext (через DbSet<T> или OnModelCreating).");
@@ -142,7 +142,7 @@ public abstract class ProviderBase<TEntity> where TEntity : TypeBase
         var dbSet = GetDbSet();
         var newEntity = dbSet.Add(item).Entity;
 
-        _contextBase.SaveChanges();
+        Context.SaveChanges();
 
         return newEntity;
     }
@@ -159,7 +159,7 @@ public abstract class ProviderBase<TEntity> where TEntity : TypeBase
             .AddAsync(item, cancellationToken: ct);
         
         var newEntity = result.Entity;
-        await _contextBase.SaveChangesAsync(cancellationToken: ct);
+        await Context.SaveChangesAsync(cancellationToken: ct);
 
         return newEntity;
     }
@@ -174,7 +174,7 @@ public abstract class ProviderBase<TEntity> where TEntity : TypeBase
         if (items == null || !items.Any()) return;
 
         GetDbSet().AddRange(items);
-        _contextBase.SaveChanges();
+        Context.SaveChanges();
     }
     
     /// <summary>
@@ -189,7 +189,7 @@ public abstract class ProviderBase<TEntity> where TEntity : TypeBase
         await GetDbSet()
             .AddRangeAsync(items, cancellationToken: ct);
 
-        await _contextBase.SaveChangesAsync(cancellationToken: ct);
+        await Context.SaveChangesAsync(cancellationToken: ct);
     }
 
     /// <summary>
@@ -208,7 +208,7 @@ public abstract class ProviderBase<TEntity> where TEntity : TypeBase
             outputValues.Add(result.Entity);
         });
 
-        _contextBase.SaveChanges();
+        Context.SaveChanges();
         return outputValues;
     }
     
@@ -231,7 +231,7 @@ public abstract class ProviderBase<TEntity> where TEntity : TypeBase
             outputValues.Add(result.Entity);
         }, cancellationToken: ct);
 
-        await _contextBase.SaveChangesAsync(cancellationToken: ct);
+        await Context.SaveChangesAsync(cancellationToken: ct);
         return outputValues;
     }
 
@@ -307,8 +307,8 @@ public abstract class ProviderBase<TEntity> where TEntity : TypeBase
         updateStatement.Id = id;
         updateStatement.UpdateDate = DateTime.UtcNow;
         
-        _contextBase.Entry(exitingEntity).CurrentValues.SetValues(updateStatement);
-        _contextBase.SaveChanges();
+        Context.Entry(exitingEntity).CurrentValues.SetValues(updateStatement);
+        Context.SaveChanges();
         return true;
     }
     
@@ -327,8 +327,8 @@ public abstract class ProviderBase<TEntity> where TEntity : TypeBase
         updateStatement.Id = id;
         updateStatement.UpdateDate = DateTime.UtcNow;
         
-        _contextBase.Entry(exitingEntity).CurrentValues.SetValues(updateStatement);
-        await _contextBase.SaveChangesAsync();
+        Context.Entry(exitingEntity).CurrentValues.SetValues(updateStatement);
+        await Context.SaveChangesAsync();
         return true;
     }
 }

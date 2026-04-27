@@ -1,12 +1,14 @@
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.EntityFrameworkCore;
 using Offices.DataAccess;
+using Offices.DataAccess.Providers;
 using Offices.Models.Settings;
 
 namespace Offices;
 
 public class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +29,9 @@ public class Program
         SettingUpDatabase(builder);
 
         var app = builder.Build();
+        
+        // Автоматический накат миграций
+        await ApplyAutoMigrationAsync(app);
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
@@ -89,13 +94,31 @@ public class Program
     {
         // разное
         builder.Services.AddTransient<FileExtensionContentTypeProvider>();
+        
+        // бд-провайдеры
+        builder.Services.AddScoped<OfficeProvider>();
+        builder.Services.AddScoped<PhoneProvider>();
     }
     
     private static void SettingUpDatabase(WebApplicationBuilder builder)
     {
-        builder.Services.AddDbContext<DbContextBase>((serviceProvider, options) => 
+        var databaseSettings = builder.Configuration
+            .GetSection(nameof(DbConnectionSettings))
+            .Get<DbConnectionSettings>();
+        
+        if (databaseSettings == null) return;
+        
+        builder.Services.AddDbContext<DellinDictionaryDbContext>((serviceProvider, options) => 
         {
-            // todo
+            options.UseNpgsql(databaseSettings.ConnectionString);
         });
+    }
+
+    private static async Task ApplyAutoMigrationAsync(WebApplication app)
+    {
+        using var scope = app.Services.CreateScope();
+        
+        var db = scope.ServiceProvider.GetRequiredService<DellinDictionaryDbContext>();
+        await db.Database.MigrateAsync(); // Проверить, есть ли новые миграции
     }
 }
