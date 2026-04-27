@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Offices.DataAccess;
 using Offices.DataAccess.Providers;
 using Offices.Models.Settings;
+using Offices.Services.Hosted;
 using Offices.Services.TerminalImport;
 
 namespace Offices;
@@ -57,6 +58,9 @@ public class Program
         
         builder.Services.Configure<OriginSettings>(
             builder.Configuration.GetSection(nameof(OriginSettings)));
+        
+        builder.Services.Configure<ImportSettings>(
+            builder.Configuration.GetSection(nameof(ImportSettings)));
     }
     
     private static void SettingUpSwagger(WebApplicationBuilder builder)
@@ -72,7 +76,7 @@ public class Program
         
         if (originSettings == null) return;
         
-        // Настройка Cors
+        // настройка Cors
         builder.Services.AddCors(options =>
         {
             options.AddPolicy("AllowFrontend", policy =>
@@ -102,6 +106,9 @@ public class Program
         
         // сервисы
         builder.Services.AddScoped<ITerminalImportService, TerminalImportService>();
+        
+        // фоновые сервисы
+        builder.Services.AddHostedService<TerminalImportBackgroundService>();
     }
     
     private static void SettingUpDatabase(WebApplicationBuilder builder)
@@ -123,6 +130,6 @@ public class Program
         using var scope = app.Services.CreateScope();
         
         var db = scope.ServiceProvider.GetRequiredService<DellinDictionaryDbContext>();
-        await db.Database.MigrateAsync(); // Проверить, есть ли новые миграции
+        await db.Database.MigrateAsync(); // проверить, есть ли новые миграции
     }
 }

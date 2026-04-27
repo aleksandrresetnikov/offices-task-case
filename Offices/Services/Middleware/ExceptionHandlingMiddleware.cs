@@ -75,7 +75,7 @@ public class ExceptionHandlingMiddleware
                 StatusCode = 500,
                 Message = _settings.DevMode ? exception.Message : "Internal Server Error",
                 
-                // Details (StackTrace) пробрасываем только в режиме разработки, ибо светить
+                // Details (StackTrace) пробрасываем ТОЛЬКО в режиме разработки, ибо светить
                 // структуру папок на беке в проде - не оч
                 Details = _settings.DevMode ? exception.StackTrace : null 
             };

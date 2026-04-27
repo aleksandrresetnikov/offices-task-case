@@ -55,7 +55,6 @@ public static partial class AddressParser
     private static string CleanSuffixes(string input)
     {
         // убираем "г.", "область" и тд
-        // return Regex.Replace(input, @"\s+(г\.?|обл\.?|область|край|респ\.?)$", "", RegexOptions.IgnoreCase).Trim();
         return SuffixesRegex().Replace(input, string.Empty).Trim();
     }
 
@@ -79,7 +78,7 @@ public static partial class AddressParser
         var match = ApartmentRegex().Match(input);
         if (!match.Success) return null;
         
-        // Берем только цифры, если там что-то вроде "12-н"
+        // берем только цифры, если там что-то вроде "12-н"
         var digits = Regex.Match(match.Groups[1].Value, @"\d+");
         if (digits.Success && int.TryParse(digits.Value, out int val))
             return val;
