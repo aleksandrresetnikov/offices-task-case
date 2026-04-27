@@ -15,5 +15,11 @@ public class PhoneConfiguration : IEntityTypeConfiguration<Phone>
         builder.Property(x => x.PhoneNumber)
             .IsRequired()
             .HasMaxLength(128);
+        
+        builder.Property(x => x.Additional)
+            .HasMaxLength(256);
+        
+        builder.HasIndex(x => x.OfficeId)
+            .HasDatabaseName("IX_Phones_OfficeId");
     }
 }
