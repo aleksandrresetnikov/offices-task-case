@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Offices.DataAccess;
 using Offices.DataAccess.Providers;
 using Offices.Models.Settings;
+using Offices.Services.TerminalImport;
 
 namespace Offices;
 
@@ -98,6 +99,9 @@ public class Program
         // бд-провайдеры
         builder.Services.AddScoped<OfficeProvider>();
         builder.Services.AddScoped<PhoneProvider>();
+        
+        // сервисы
+        builder.Services.AddScoped<ITerminalImportService, TerminalImportService>();
     }
     
     private static void SettingUpDatabase(WebApplicationBuilder builder)
