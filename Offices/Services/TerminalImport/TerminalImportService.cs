@@ -6,7 +6,7 @@ using Offices.Models.Parsing;
 
 namespace Offices.Services.TerminalImport;
 
-public class TerminalImportService(DellinDictionaryDbContext _dbContext, ILogger<TerminalImportService> _logger,
+internal class TerminalImportService(DellinDictionaryDbContext _dbContext, ILogger<TerminalImportService> _logger,
     IHostEnvironment _env) : ITerminalImportService
 {
     public async Task ImportAsync(CancellationToken ct = default)
@@ -39,7 +39,7 @@ public class TerminalImportService(DellinDictionaryDbContext _dbContext, ILogger
         var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
             
         // загружаем рут
-        var rootData = await JsonSerializer.DeserializeAsync<TerminalsRootDto>(fileStream, options, ct);
+        var rootData = await JsonSerializer.DeserializeAsync<TerminalsRootParsingDto>(fileStream, options, ct);
 
         // если в руте нет массива "city" - ливаем
         if (rootData?.Cities == null || rootData.Cities.Count == 0)

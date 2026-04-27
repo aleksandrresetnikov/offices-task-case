@@ -4,6 +4,8 @@ using Offices.DataAccess;
 using Offices.DataAccess.Providers;
 using Offices.Models.Settings;
 using Offices.Services.Hosted;
+using Offices.Services.Middleware;
+using Offices.Services.Office;
 using Offices.Services.TerminalImport;
 
 namespace Offices;
@@ -34,6 +36,9 @@ public class Program
         
         // Автоматический накат миграций
         await ApplyAutoMigrationAsync(app);
+        
+        // ловушка для http-ошибок и необработанных исключений
+        app.UseMiddleware<ExceptionHandlingMiddleware>();
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
@@ -106,6 +111,7 @@ public class Program
         
         // сервисы
         builder.Services.AddScoped<ITerminalImportService, TerminalImportService>();
+        builder.Services.AddScoped<IOfficeService, OfficeService>();
         
         // фоновые сервисы
         builder.Services.AddHostedService<TerminalImportBackgroundService>();

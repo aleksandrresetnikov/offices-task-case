@@ -15,7 +15,7 @@ public record ParsedAddress(string? Region, string? Street, string? HouseNumber,
 /// В идеале, для этого кейса использовать сторнние сервисы (вроде DaData нашел, или у
 /// апи Яндекса должно быть что-то) 
 /// </summary>
-public static partial class AddressParser
+internal static partial class AddressParser
 {
     // регексы:
     [GeneratedRegex(@"(?:дом\s*№?|д\.)\s*([0-9А-Яа-яA-Za-z\-/]+)", RegexOptions.IgnoreCase)]

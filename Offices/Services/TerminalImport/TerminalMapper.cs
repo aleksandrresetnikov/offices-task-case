@@ -2,16 +2,19 @@
 using Offices.Models.Entities;
 using Offices.Models.Parsing;
 
+// using Offices.Models.Entities;
+// using Offices.Models.Parsing;
+
 namespace Offices.Services.TerminalImport;
 
 /// <summary>
 /// 
 /// </summary>
-public static class TerminalMapper
+internal static class TerminalMapper
 {
-    public static List<Office> Map(TerminalsRootDto rootData)
+    public static List<Models.Entities.Office> Map(TerminalsRootParsingDto rootData)
     {
-        var offices = new List<Office>();
+        var offices = new List<Models.Entities.Office>();
 
         foreach (var city in rootData.Cities)
         {
@@ -24,7 +27,7 @@ public static class TerminalMapper
                 _ = double.TryParse(terminal.Latitude, NumberStyles.Any, CultureInfo.InvariantCulture, out double lat);
                 _ = double.TryParse(terminal.Longitude, NumberStyles.Any, CultureInfo.InvariantCulture, out double lon);
                 
-                offices.Add(new Office
+                offices.Add(new Models.Entities.Office
                 {
                     Code = terminal.Id,
                     Uuid = Guid.NewGuid().ToString(),
@@ -60,7 +63,7 @@ public static class TerminalMapper
         return offices;
     }
 
-    private static OfficeType? GetOfficeType(TerminalDto terminal)
+    private static OfficeType? GetOfficeType(TerminalParsingDto terminal)
     {
         if (terminal.IsPvz) return OfficeType.PVZ;
         if (terminal.IsOffice) return OfficeType.POSTAMAT; 
@@ -68,7 +71,7 @@ public static class TerminalMapper
         return OfficeType.WAREHOUSE;
     }
 
-    private static string GetWorkTime(TerminalDto terminal)
+    private static string GetWorkTime(TerminalParsingDto terminal)
     {
         // ищем в worktable
         var timetable = terminal.Worktables?.WorktableList?.FirstOrDefault()?.Timetable;

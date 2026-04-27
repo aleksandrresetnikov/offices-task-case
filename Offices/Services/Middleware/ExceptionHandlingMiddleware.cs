@@ -10,7 +10,7 @@ namespace Offices.Services.Middleware;
 /// Глобальный перехватчик исключений. 
 /// Обеспечивает единый формат ответа API при возникновении ошибок.
 /// </summary>
-public class ExceptionHandlingMiddleware
+internal class ExceptionHandlingMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogger<ExceptionHandlingMiddleware> _logger;
