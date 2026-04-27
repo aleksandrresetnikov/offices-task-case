@@ -16,8 +16,7 @@ public class TerminalImportBackgroundService(IServiceScopeFactory _scopeFactory,
         var intervalHours = importSettings.IntervalHours;
         
         // используем PeriodicTimer, т.к. Task.Wait не учитывает время выполнения задачи
-        // var period = TimeSpan.FromHours(intervalHours);
-        var period = TimeSpan.FromSeconds(10);
+        var period = TimeSpan.FromHours(intervalHours);
         using var timer = new PeriodicTimer(period);
 
         try
